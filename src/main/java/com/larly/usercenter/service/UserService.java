@@ -3,10 +3,12 @@ package com.larly.usercenter.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.larly.usercenter.common.BaseResponse;
 import com.larly.usercenter.model.domain.User;
+import com.larly.usercenter.model.dto.TeamQuery;
 import com.larly.usercenter.model.request.UserRegisterParam;
 import com.larly.usercenter.model.request.UserSearchParam;
 import com.larly.usercenter.model.response.PageResult;
 import com.larly.usercenter.model.response.UserResult;
+import com.larly.usercenter.model.vo.TeamUserVo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -99,8 +101,11 @@ public interface UserService extends IService<User> {
 
     /**
      * 推荐用户
-     * @param userSearchParam
+     * @param pageNum
+     * @param pageSize
+     * @param request
      * @return
      */
     PageResult<UserResult> recommendUsers(Integer  pageNum, Integer pageSize,  HttpServletRequest request);
+
 }

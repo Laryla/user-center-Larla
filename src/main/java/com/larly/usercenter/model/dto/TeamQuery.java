@@ -43,6 +43,11 @@ public class TeamQuery extends PageRequest {
     private Integer maxNum;
 
     /**
+     * 过期时间
+     */
+    private Date expireTime;
+
+    /**
      * 用户id
      */
     private Long userId;

@@ -5,20 +5,20 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.larly.usercenter.model.response.UserResult;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 队伍和用户信息封装类
  */
 @Data
-public class TeamUserVo {
+public class TeamUpdateVo implements Serializable {
+    private static final long serialVersionUID = 1L;
+    @TableId(type = IdType.AUTO)
     /**
      * id
      */
-    @TableId(type = IdType.AUTO)
     private Long id;
-
     /**
      * 队伍名称
      */
@@ -29,20 +29,12 @@ public class TeamUserVo {
      */
     private String description;
 
-    /**
-     * 最大人数
-     */
-    private Integer maxNum;
 
     /**
      * 过期时间
      */
     private Date expireTime;
 
-    /**
-     * 用户id
-     */
-    private Long userId;
 
     /**
      * 0 - 公开，1 - 私有，2 - 加密
@@ -54,14 +46,4 @@ public class TeamUserVo {
      */
     private String password;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-
-    /**
-     * 创建人信息
-     */
-    UserResult  createUser;
 }

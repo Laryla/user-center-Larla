@@ -338,6 +338,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
 //        拿到登录态
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        if(userObj == null){
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
         return (User) userObj;
     }
 

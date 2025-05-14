@@ -11,6 +11,8 @@ import com.larly.usercenter.model.domain.User;
 import com.larly.usercenter.model.dto.TeamQuery;
 import com.larly.usercenter.model.request.*;
 
+import com.larly.usercenter.model.vo.TeamUpdateVo;
+import com.larly.usercenter.model.vo.TeamUserVo;
 import com.larly.usercenter.service.TeamService;
 import com.larly.usercenter.service.impl.UserServiceImpl;
 import org.apache.commons.beanutils.BeanUtils;
@@ -20,7 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 
 @RestController
@@ -77,23 +80,23 @@ public class TeamController {
         return ResultUtils.success(result);
     }
 
-    /**
-     * 更新队伍
-     *
-     * @param team 队伍对象
-     * @return
-     */
-    @PostMapping("/update")
-    public BaseResponse<Boolean> updateTeam(@RequestBody Team team) {
-        if (team == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        boolean result = teamService.updateById(team);
-        if(!result){
-            throw new BusinessException(ErrorCode.SERVER_ERROR,"更新队伍失败");
-        }
-        return ResultUtils.success(result);
-    }
+//    /**
+//     * 更新队伍
+//     *
+//     * @param team 队伍对象
+//     * @return
+//     */
+//    @PostMapping("/update")
+//    public BaseResponse<Boolean> updateTeam(@RequestBody Team team) {
+//        if (team == null) {
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+//        }
+//        boolean result = teamService.updateById(team);
+//        if(!result){
+//            throw new BusinessException(ErrorCode.SERVER_ERROR,"更新队伍失败");
+//        }
+//        return ResultUtils.success(result);
+//    }
 
     /**
      * 根据id获取队伍
@@ -101,16 +104,8 @@ public class TeamController {
      * @param id 队伍id
      * @return
      */
-//    @GetMapping("/list")
-//    public BaseResponse<Team> getTeamById(long id){
-//        if(id<=0){
-//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-//        }
-//        Team team = teamService.getById(id);
-//        return ResultUtils.success(team);
-//    }
-    @GetMapping("/list")
-    public BaseResponse<Team> getTeamById(long id){
+    @GetMapping("/list/{id}")
+    public BaseResponse<Team> getTeamById(@PathVariable  long id){
         if(id<=0){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -118,14 +113,46 @@ public class TeamController {
         return ResultUtils.success(team);
     }
 
+
     /**
      * 获取队伍列表
      *
      * @param teamQuery 队伍查询对象
      * @return
      */
+//    @GetMapping("/list")
+//    public BaseResponse<List<Team>> listTeams(TeamQuery teamQuery){
+//        if(teamQuery == null){
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+//        }
+//        Team team = new Team();
+//        try {
+//            BeanUtils.copyProperties(team,teamQuery);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//        QueryWrapper<Team> queryWrapper = new QueryWrapper<>(team);
+//        List<Team> list = teamService.list(queryWrapper);
+//        return ResultUtils.success(list);
+//    }
+    @GetMapping("/list")
+    public BaseResponse<List<TeamUserVo>> listTeams(TeamQuery teamQuery, HttpServletRequest request){
+        if(teamQuery == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User userLogin = userService.getUserLogin(request);
+        List<TeamUserVo> teamUserVoList = teamService.listTeams(teamQuery, userLogin);
+        return ResultUtils.success(teamUserVoList);
+    }
+
+    /**
+     * 获取队伍列表（分页）
+     *
+     * @param teamQuery 队伍查询对象
+     * @return
+     */
     @GetMapping("/list/page")
-    public BaseResponse<Page<Team>> listTeams(TeamQuery teamQuery){
+    public BaseResponse<Page<Team>> listTeamsPage(TeamQuery teamQuery){
 //        这是封装一个DTO ：作用 就是把前端传过来的参数封装成一个对象，方便后续使用. 增强安全性
         if(teamQuery==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -144,6 +171,23 @@ public class TeamController {
         Page<Team> teamPage = teamService.page(page, queryWrapper);
 //        PageResult<Team> result = new PageResult<>(teamPage.getTotal(), teamPage.getRecords());
         return ResultUtils.success(teamPage);
+    }
+
+
+    /**
+     * 更新队伍
+     *
+     * @param  teamUpdateVo 更新队伍对象
+     * @return
+     */
+    @PostMapping("/update")
+    public BaseResponse<Boolean> updateTeam(@RequestBody TeamUpdateVo teamUpdateVo, HttpServletRequest request){
+        if(teamUpdateVo == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User userLogin = userService.getUserLogin(request);
+        Boolean  result = teamService.updateTeam(teamUpdateVo, userLogin);
+        return ResultUtils.success(result);
     }
 
 }
