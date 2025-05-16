@@ -1,17 +1,11 @@
 package com.larly.usercenter.service.impl;
-import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Date;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.larly.usercenter.common.BaseResponse;
 import com.larly.usercenter.common.ErrorCode;
-import com.larly.usercenter.common.ResultUtils;
 import com.larly.usercenter.contact.UserContact;
 import com.larly.usercenter.exception.BusinessException;
 import com.larly.usercenter.model.domain.User;
@@ -29,13 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import java.security.DigestException;
+import javax.servlet.http.HttpServletRequest;;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.TimeUnit;;
 import java.util.stream.Collectors;
 
 import static com.larly.usercenter.contact.UserContact.USER_LOGIN_STATE;
@@ -184,14 +175,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             List<User> users = userMapper.selectList(queryWrapper);
             List<UserResult> list = users.stream().map(this::safetyUser).collect(Collectors.toList());
-            PageResult<UserResult> pageResult = new PageResult<>(page.getTotal(),list);
+            PageResult<UserResult> pageResult = new PageResult<>(page.getTotal(),page.getPageNum(),list);
             return pageResult;
         }else{
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             queryWrapper.like("user_name",username);
             List<User> users = userMapper.selectList(queryWrapper);
             List<UserResult> list = users.stream().map(this::safetyUser).collect(Collectors.toList());
-            PageResult<UserResult> pageResult = new PageResult<>(page.getTotal(),list);
+            PageResult<UserResult> pageResult = new PageResult<>(page.getTotal(),page.getPageNum(),list);
             return pageResult;
         }
 
@@ -386,25 +377,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
         // 先查缓存
         ValueOperations valueOperations = redisTemplate.opsForValue();
-         Page<User> cachedUserList = (Page<User>) valueOperations.get(redisKey);
+        PageResult<UserResult> cachedUserList = (PageResult<UserResult>) valueOperations.get(redisKey);
 
         if (cachedUserList != null) {
             // 缓存命中，直接返回
-            return new PageResult<>(cachedUserList.getTotal(), cachedUserList.stream()
-                    .map(this::safetyUser).collect(Collectors.toList()));
+            return cachedUserList;
+
         }
 
         // 缓存未命中，查询数据库（带分页）
-        Page<User> page = PageHelper.startPage( pageNum, pageSize );
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        List<User> userList = userMapper.selectList(queryWrapper);
+        PageHelper.startPage(pageNum,pageSize);
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        List<User> userList = userMapper.selectList(userQueryWrapper);
+        Page<User> page = (Page<User>) userList;
 
-        // 将结果写入缓存（设置5分钟过期时间）
-        valueOperations.set(redisKey, page, 5, TimeUnit.MINUTES);
+
 
         // 返回分页结果
         List<UserResult> results = userList.stream().map(this::safetyUser).collect(Collectors.toList());
-        return new PageResult<>(page.getTotal(), results);
+        // 将结果写入缓存（设置5分钟过期时间）
+        PageResult<UserResult> result = new PageResult<>(page.getTotal(),page.getPageNum(), results);
+        valueOperations.set(redisKey, result, 5, TimeUnit.MINUTES);
+        return result;
     }
 
 

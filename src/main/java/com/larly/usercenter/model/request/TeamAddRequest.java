@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -32,8 +33,9 @@ public class TeamAddRequest {
     private Integer maxNum;
 
     /**
-     * 过期时间
+     * 过期时间(yyyy-MM-dd)
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date expireTime;
 
     /**

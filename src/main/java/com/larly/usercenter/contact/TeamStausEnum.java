@@ -14,7 +14,7 @@ public enum TeamStausEnum {
     /**
      * 加密
      */
-    Encryption(3,"加密");
+    Encryption(2,"加密");
 
     private Integer key;
     private String text;

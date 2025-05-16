@@ -35,6 +35,11 @@ public class TeamUserVo {
     private Integer maxNum;
 
     /**
+     * 当前人数
+     */
+    private Long num;
+
+    /**
      * 过期时间
      */
     private Date expireTime;

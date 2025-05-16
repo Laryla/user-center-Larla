@@ -31,7 +31,7 @@ public class UserTeam {
     /**
      * 加入时间
      */
-    @TableLogic
+
     private Date joinTime;
 
     /**
@@ -47,5 +47,6 @@ public class UserTeam {
     /**
      * 是否删除
      */
+    @TableLogic
     private Integer isDelete;
 }

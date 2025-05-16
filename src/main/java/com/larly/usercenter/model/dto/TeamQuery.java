@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.larly.usercenter.model.request.PageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -43,8 +44,9 @@ public class TeamQuery extends PageRequest {
     private Integer maxNum;
 
     /**
-     * 过期时间
+     * 过期时间(yyyy-MM-dd)
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date expireTime;
 
     /**

@@ -11,6 +11,8 @@ import com.larly.usercenter.model.domain.User;
 import com.larly.usercenter.model.dto.TeamQuery;
 import com.larly.usercenter.model.request.*;
 
+import com.larly.usercenter.model.vo.TeamExitVo;
+import com.larly.usercenter.model.vo.TeamJoinVo;
 import com.larly.usercenter.model.vo.TeamUpdateVo;
 import com.larly.usercenter.model.vo.TeamUserVo;
 import com.larly.usercenter.service.TeamService;
@@ -63,17 +65,18 @@ public class TeamController {
     }
 
     /**
-     * 删除队伍
+     * 队长解散队伍
      *
      * @param id 队伍ID
      * @return
      */
     @PostMapping("/delect")
-    public BaseResponse<Boolean> delectTeam(@RequestBody long id) {
+    public BaseResponse<Boolean> delectTeam(@RequestBody long id, HttpServletRequest request) {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        boolean result = teamService.removeById(id);
+        User userLogin = userService.getUserLogin(request);
+        boolean result = teamService.delectTeam(id,userLogin);
         if(!result){
             throw new BusinessException(ErrorCode.SERVER_ERROR,"删除队伍失败");
         }
@@ -175,7 +178,7 @@ public class TeamController {
 
 
     /**
-     * 更新队伍
+     * 更新队伍信息
      *
      * @param  teamUpdateVo 更新队伍对象
      * @return
@@ -189,6 +192,42 @@ public class TeamController {
         Boolean  result = teamService.updateTeam(teamUpdateVo, userLogin);
         return ResultUtils.success(result);
     }
+
+    /**
+     * 用户加入队伍
+     * @param teamJoinVo
+     * @param request
+     * @return
+     */
+    @PostMapping("/join")
+    public BaseResponse<Boolean> joinTeam(@RequestBody TeamJoinVo teamJoinVo, HttpServletRequest request){
+        if(teamJoinVo == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User userLogin = userService.getUserLogin(request);
+        Boolean result =  teamService.joinTeam(teamJoinVo,userLogin);
+        return ResultUtils.success(result);
+
+    }
+
+
+    /**
+     * 用户退出队伍
+     * @param teamExitVo
+     * @param request
+     * @return
+     */
+    @PostMapping("/exit")
+    public BaseResponse<Boolean> exitTeam(@RequestBody TeamExitVo teamExitVo, HttpServletRequest request){
+        if(teamExitVo == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User userLogin = userService.getUserLogin(request);
+        Boolean result = teamService.exitTeam(teamExitVo,userLogin);
+        return ResultUtils.success(result);
+    }
+
+
 
 }
 

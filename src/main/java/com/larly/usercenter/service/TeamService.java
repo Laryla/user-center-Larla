@@ -4,6 +4,8 @@ import com.larly.usercenter.model.domain.Team;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.larly.usercenter.model.domain.User;
 import com.larly.usercenter.model.dto.TeamQuery;
+import com.larly.usercenter.model.vo.TeamExitVo;
+import com.larly.usercenter.model.vo.TeamJoinVo;
 import com.larly.usercenter.model.vo.TeamUpdateVo;
 import com.larly.usercenter.model.vo.TeamUserVo;
 
@@ -41,4 +43,28 @@ public interface TeamService extends IService<Team> {
      * @return
      */
     Boolean updateTeam(TeamUpdateVo teamUpdateVo, User userLogin);
+
+    /**
+     * 用户加入队伍
+     * @param teamJoinVo
+     * @param userLogin
+     * @return
+     */
+    Boolean joinTeam(TeamJoinVo teamJoinVo, User userLogin);
+
+    /**
+     * 用户退出队伍
+     * @param teamExitVo
+     * @param userLogin
+     * @return
+     */
+    Boolean exitTeam(TeamExitVo teamExitVo, User userLogin);
+
+    /**
+     *
+     * @param id
+     * @param userLogin
+     * @return
+     */
+    boolean delectTeam(long teamId, User userLogin);
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.larly.usercenter.model.response.UserResult;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -31,8 +32,9 @@ public class TeamUpdateVo implements Serializable {
 
 
     /**
-     * 过期时间
+     * 过期时间(yyyy-MM-dd)
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date expireTime;
 
 
